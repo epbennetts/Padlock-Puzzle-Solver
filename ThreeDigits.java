@@ -1,6 +1,7 @@
 package my_package;
 import java.io.*;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class ThreeDigits {
 
@@ -13,6 +14,11 @@ public class ThreeDigits {
 
 	private static String start, goal;
 	private static String[] forbidden;
+	private ArrayList<Node> expanded;
+	private DataStructure fringe;  //could have diff ones dep on algo
+	private int num_expanded;
+	
+	private TreeStruct tree;
 
 
 	public static void main(String[] args){
@@ -42,21 +48,27 @@ public class ThreeDigits {
 
 				String forb = scan.nextLine();
 				String[] forbidden = forb.split(",");
-
-				//				Not nec, more useful to have this as String
-				//				forbibbi = new int[forb_array.length];				
-				//				for (int i=0; i < forb_array.length; i++) {
-				//					forbidden[i] = Integer.parseInt(forb_array[i]);					
-				//				}
+				//for loop to convert each string array element into number(digit)
 			}
 		} 
 		catch (FileNotFoundException exc) {
 			exc.printStackTrace();
 		}
+//...
 
-
+		
 	}
 
+//could make method .stringToDigit() to convert start, goal and all forbidden
+//	public int[] getDigits() {
+//	int[] digits_num = new int[3];
+//	String[] digits_str = data.split(""); 
+//	//assumes 3 digits
+//	for (int i = 0; i < 3; i++) {
+//		digits[i] = Integer.parseInt(digits_str[i]);
+//	}
+//	return digits;
+//}
 
 
 	//methods
@@ -68,6 +80,7 @@ public class ThreeDigits {
 
 	//different algorithm methods 
 
+	
 
 
 }
