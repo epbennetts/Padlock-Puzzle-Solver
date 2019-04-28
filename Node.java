@@ -2,19 +2,14 @@ package my_package;
 import java.util.*;
 
 public class Node {
-	//declare:
+	//declare vars
 	//consider which of these should be static/protected/etc.
 	//!!!might still have leftover mess from changing imput from String data to int[] digits
-
-	private String data;// /number/string/whatever	//will delete
 	private int[] digits;
 	private Node parent;
 	private ArrayList<Node> children;
 	//private ArrayList<Node> siblings;
 	private int depth;
-	
-	//other
-	
 	//index (0,1,2) of last digit changed 
 	//for 1st node (root) avoid this bit of code or set to -1 and catch exc
 	private int last_changed; 
@@ -48,8 +43,8 @@ public class Node {
 	//methods
 	
 	//!decide if want to return Str of sth else 
-	public String getData() {
-		return data;		
+	public int[] getDigits() {
+		return digits;		
 	}	
 	
 	public Node getParent() {
@@ -60,16 +55,20 @@ public class Node {
 		return children;		
 	}
 	
-	public ArrayList<Node> getSiblings() {
-		//assumes the null parent if statement works
-		if (depth != 0) {
-			return siblings;//fix: return children of parent except current child
-		}
-		else {
-			return null;
-		}
-				
+	public int getLastChanged() {
+		return last_changed;
 	}
+	
+//	public ArrayList<Node> getSiblings() {
+//		//assumes the null parent if statement works
+//		if (depth != 0) {
+//			return siblings;//fix: return children of parent except current child
+//		}
+//		else {
+//			return null;
+//		}
+//				
+//	}
 
 	//static? -> not but maybe when we set it yes
 	public int getDepth() {
@@ -79,17 +78,13 @@ public class Node {
 		return depth;
 	}
 
-	//could make boolean or sth?
 	//!consider making appendNewChildren but prob not nec
 	//problem: not very transparent from outside cos uses private vars
 	//needs to be ordered (for loops should ensure that)
 	//generate all poss children now, filter which we expand later (not .equal prev exp nodes)
 	public ArrayList<Node> generateChildren() {
-		//need: last_changed	
-		
 		//assumes parent null thing works		
 		//i.e. if root (depth=0), then last_changed == -1
-
 		ArrayList<Node> children = new ArrayList<Node>();
 		int[] dig_temp = new int[3];
 		for (int x = 0; x < 3; x++) {
@@ -110,36 +105,33 @@ public class Node {
 		}
 		return children;		
 	}
+	
+	public boolean equals(Node otherNode) {
+//		assumptions: if data is same, digits should be same 
+//		if  children are the same, last_changed should be same 
+		int[] other_digits = otherNode.getDigits();
+		int other_changed = otherNode.getLastChanged();
+
+		//can use Arrays.equals(), compare indiv contents for more transparency/safer
+		if (Arrays.equals(this.digits, other_digits) && this.last_changed == other_changed) {
+			return true;
+		}
+		return false;
+	}
+
+	//getPath()
+	//This way don't create new one every time, but can get when nec.
+	//iterate through parents until root reached (e.g. while parent != null)
+	//
+		
 
 	
 	//will probs be relevant for cycles
-	//ALTHOUGH won't need this if check for cycles BEFORE adding children
+	//but we could ignore instead of deleting
 	//public void deleteNode() {
 		//sth sth
 	//}
-	
-	public boolean equals(Node otherNode) {
-//!		if (data is same -check weird Str equals thing, mb do toInteger -  
-//		AND  children are the same -ideally don't have to check order bc they are ordered already, but mb be safe)
-//		{
-//			return true;
-//		}
-		
-		//easy: if digits are same and last_changed is same, then same node (check)
-		//make sure there are no weird things with comparing arrays or ints (but ints easy)
-		return false;
-	}
-	
-	
-	
-	//.is leaf? If can't expand -> don't think this is a thing
-	// what do if all children are repeated (cycles)? Go back to algo I guess
-	
-	
-	//getAncestors -> to get path. 
-	//This way don't create new one every time, but can get when nec.
-	//maybe just go .getPath()
-	
+
 	
 	
 }
