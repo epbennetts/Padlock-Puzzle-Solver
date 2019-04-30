@@ -1,9 +1,10 @@
-//Done: implemented BFS, tested list updating, did first version of printPath()
+//Done: implemented BFS, tested list updating, did first version of printPath() ad printExp(), did proper version, better testing
 //first submission, other algos
 
 package my_package_new;
 import java.io.*;
 import java.util.Scanner;
+import java.util.Stack;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -93,6 +94,8 @@ public class ThreeDigits {
 			//or could print same and change what it prints in methods)
 		}
 		
+		
+		
 		//...
 		
 //		//Note: How to generate and print children	
@@ -163,11 +166,10 @@ public class ThreeDigits {
 		while (num_expanded <= MAX_EXPANDED) {//check if <= is correct constraint
 			String str = Arrays.toString(curr.getDigits());
 			System.out.println("Current is :" + str);
-			printList(fringe);
-			printList(expanded);
+			printList(fringe, 'f');
+			printList(expanded, 'e');
 			System.out.println("167");
 		//check if goal
-			//ISN'T WORKING PROPERLY
 		if (isGoal(curr)) {
 			//print things? or later
 			//save/make things for printing
@@ -232,8 +234,12 @@ public class ThreeDigits {
 		System.out.println("213");
 	}
 		System.out.println("215");
-		printList(expanded);
-		printPath(expanded);
+		//could do expanded.last or sth to be on the safe side but probs ok
+		//not working
+		System.out.println("output: path, expanded");
+		printPath(curr);
+		printExp(expanded);
+		
 		
 		
 		//if fringe not empty 
@@ -309,16 +315,20 @@ public class ThreeDigits {
 					dig_temp[x] = dig_temp[x]-1;
 					if (isForbidden(dig_temp)) {
 						//do nothing(?)
+						String a = Arrays.toString(dig_temp);
+						System.out.println("forbidden, not generating child: " + a);
 					} 
 					else {
 						Node child = new Node(node, dig_temp, x);
 						children.add(child);
+
+						//testing
+						for (int i = 0; i < 3; i++) {
+							System.out.println(dig_temp[i]);
+						}
+						System.out.println("");
+						//
 					}
-//					//testing
-					for (int i = 0; i < 3; i++) {
-						System.out.println(dig_temp[i]);
-					}
-					System.out.println("");
 				}
 				dig_temp = digits.clone();
 				if (dig_temp[x] != 9) {
@@ -326,16 +336,20 @@ public class ThreeDigits {
 					
 					if (isForbidden(dig_temp)) {
 						//do nothing(?)
+						String a = Arrays.toString(dig_temp);
+						System.out.println("forbidden, not generating child: " + a);
 					} 
 					else {
 						Node child = new Node(node, dig_temp, x);
 						children.add(child);
+
+						//testing
+						for (int i = 0; i < 3; i++) {
+							System.out.println(dig_temp[i]);
+						}
+						System.out.println("");
+						//
 					}
-					//testing
-					for (int i = 0; i < 3; i++) {
-						System.out.println(dig_temp[i]);
-					}
-					System.out.println("");
 				} 			
 			}
 		}
@@ -377,7 +391,7 @@ public class ThreeDigits {
 	}
 	
 	//proper one
-	public static void printPath(LinkedList<Node> expanded) {
+	public static void printExp(LinkedList<Node> expanded) {
 		//case goal not found
 		for (int i = 0; i < expanded.size(); i++) {
 			//printint doesn't work when using poll() with Queue
@@ -389,11 +403,47 @@ public class ThreeDigits {
 			}
 		}
 	}
+	
+	public static void printPath(Node node) {
+		Stack<Node> path = new Stack<Node>();
+		String node_str;
+		Node node_temp = node;
+		
+		while (node_temp != null) {
+			path.push(node_temp);
+			node_temp = node_temp.getParent();
+		}
+		
+		while (!path.isEmpty()) {
+			node_str = Arrays.toString(path.pop().getDigits()).replaceAll("\\[|\\]|,| |\\s", "");
+			System.out.print(node_str);
+			if (path.size() > 0) {
+				System.out.print(",");				
+			}
+		}
+		System.out.println("");
+		
+		//silly
+//		while (node.getParent() != null) {
+//			node_str = Arrays.toString(node.getDigits()).replaceAll("\\[|\\]|,| |\\s", "");
+//			System.out.print(node_str + ",");
+//			node = node.getParent();
+//		}
+//		String root_str = Arrays.toString(root.getDigits()).replaceAll("\\[|\\]|,| |\\s", "");
+//		System.out.println(root_str);
+			
+	}
 
 	//for testing
-	public static void printList(LinkedList<Node> fringe) {
-		//case goal not found
-		System.out.print("list: ");
+	public static void printList(LinkedList<Node> fringe, char ch) {
+		if (ch == 'f') {
+			System.out.print("fringe: ");
+		}
+		else {
+			System.out.print("expanded: ");
+		}
+		//case if goal not found?
+		
 		for (int i = 0; i < fringe.size(); i++) {
 			int[] digt = fringe.get(i).getDigits(); 
 			String digt_str = Arrays.toString(digt).replaceAll("\\[|\\]|,| |\\s", "");
