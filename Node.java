@@ -1,4 +1,7 @@
-package my_package;
+//Did: 
+//Todo: 
+
+package my_package_new;
 import java.util.*;
 
 public class Node {
@@ -13,7 +16,7 @@ public class Node {
 	//index (0,1,2) of last digit changed 
 	//for 1st node (root) avoid this bit of code or set to -1 and catch exc
 	private int last_changed; 
-	private boolean expanded;
+	private boolean visited;
 	
 	
 	//could try-catch nullpointer for root but seems clunky
@@ -22,7 +25,7 @@ public class Node {
 		
 		this.digits = digits;
 		this.last_changed = last_changed;
-		expanded = false;
+		visited = false;
 		//see if this works
 		if (parent == null) {
 			depth = 0;
@@ -125,6 +128,14 @@ public class Node {
 			return true;
 		}
 		return false;
+	}
+	
+	public void setVisited(boolean b) {
+		this.visited = b;
+	}
+	
+	public boolean visited() {
+		return this.visited;
 	}
 
 	//getPath() --> put in main progr
