@@ -1,5 +1,5 @@
-//Done: implemented BFS, tested list updating, did first version of printPath() ad printExp(), did proper version, better testing
-//first submission, other algos
+//Done: implemented DFS
+//ToDo: check DFS for errors, first submission, other algos
 
 package my_package_new;
 import java.io.*;
@@ -149,7 +149,9 @@ public class ThreeDigits {
 		//Anything else? ...		
 	}
 
-
+	//START
+	//still have to do case where we don't find the node!!
+	//there's case where we haven't expanded everything (1000) but no more in fringe
 	public static void solve_BFS() {
 		//what things to check for?
 		//num of nodes, whether any of them are in expanded, whether forbidden...
@@ -162,8 +164,8 @@ public class ThreeDigits {
 		Node curr = root;
 		
 		System.out.println("164");
-		//why is root visited twice??		
-		while (num_expanded <= MAX_EXPANDED) {//check if <= is correct constraint
+		//make sure this is right constraint. <=?	
+		while (num_expanded < MAX_EXPANDED) {
 			String str = Arrays.toString(curr.getDigits());
 			System.out.println("Current is :" + str);
 			printList(fringe, 'f');
@@ -183,7 +185,7 @@ public class ThreeDigits {
 		System.out.println("178");
 		//check if this node already expanded
 		for (Node otherNode : expanded) {
-			System.out.println("181");
+			//System.out.println("181");
 			if (curr.equals(otherNode)) {
 				//delete 2 lines
 				String curr_str = Arrays.toString(curr.getDigits());
@@ -213,10 +215,10 @@ public class ThreeDigits {
 		if (!ch.isEmpty()) {
 		fringe.addAll(ch);//adds to tail
 		}
-		//
+		//don't even need this
 		if (num_expanded < 2) {
 			curr = fringe.poll();
-			System.out.println("fringe num_exp <2, poll anyway");
+			System.out.println("num_exp = 1 (i.e. this is root), poll fringe anyway");
 		}
 		else if (fringe.peek() != null) {
 			System.out.println("fringe not null");
@@ -231,39 +233,139 @@ public class ThreeDigits {
 			System.out.println("210");
 			break;
 		}
-		System.out.println("213");
+		System.out.println("nodes expanded: " + num_expanded);
 	}
+		
 		System.out.println("215");
 		//could do expanded.last or sth to be on the safe side but probs ok
 		//not working
 		System.out.println("output: path, expanded");
+		if (goal_found) {
 		printPath(curr);
+		}
+		else {
+			System.out.println("No solution found.");
+		}
 		printExp(expanded);
 		
-		
-		
-		//if fringe not empty 
-		//while (num_expanded <= MAX_EXPANDED) {
-		//	generateChildren(curr);
-		//	expanded.add(curr);
-		//	num_expanded++;
-//		
-		//have node
-//			"expand it" -> generate children
-//			add children to fringe
-			//order fringe (if nec) 
-//						
 		}
 
 	
 
 
-
+	
+	
+	
+	
+	
+	
+	
+	
+	//skeleton from BFS
+	//same but fringe is a stack
 	public static void solve_DFS() {
+		//what things to check for?
+		//num of nodes, whether any of them are in expanded, whether forbidden...
+		LinkedList<Node> expanded = new LinkedList<Node> ();
+		Stack<Node> fringe = new Stack<Node> ();
+		
+		num_expanded = 0;
+		goal_found = false;
+		Node curr = root;
+		
+		System.out.println("164");
+		//make sure this is right constraint. <=?	
 		while (num_expanded < MAX_EXPANDED) {
-			
+			String str = Arrays.toString(curr.getDigits());
+			System.out.println("Current is :" + str);
+			//do later
+			//printList(fringe, 'f');
+			printList(expanded, 'e');
+			System.out.println("167");
+		//check if goal
+		if (isGoal(curr)) {
+			//print things? or later
+			//save/make things for printing
+			System.out.println("goal found");
+			goal_found = true;
+			expanded.add(curr);
+			System.out.println("175");
 			num_expanded++;
+			break;
 		}
+		System.out.println("178");
+		//check if this node already expanded
+		for (Node otherNode : expanded) {
+			//System.out.println("181");
+			if (curr.equals(otherNode)) {
+				//delete 2 lines
+				String curr_str = Arrays.toString(curr.getDigits());
+				String other_str = Arrays.toString(otherNode.getDigits());
+				System.out.println("183");
+				//will delete from fringe, don't expand
+				//need to continue from OUTER loop!!
+				System.out.println("node already visited: " + curr_str + " is same as " + other_str);
+				curr.setVisited(true);
+			}				
+		}
+		System.out.println("189");
+		//if already visited, remove from fringe, 
+		//don't add to expanded and skip this iteration
+		if (curr.visited()) {
+			System.out.println("visited, so remove from fringe");
+			System.out.println("193");
+			curr = fringe.pop();
+			continue;
+		}
+		System.out.println("196");
+		//maybe should make expanded and children same data structure?
+		ArrayList<Node> ch = generateChildren(curr);
+		expanded.add(curr);
+		num_expanded++;
+		//add children to fringe
+		Stack<Node> reverse = new Stack<Node>();
+		if (!ch.isEmpty()) {
+			for (Node child : ch) {
+				reverse.push(child);//adds to top of stack
+			}
+			for (int i = 0; i < ch.size(); i++) {
+				fringe.push(reverse.pop());//adds to top of stack
+			}
+		}
+		//don't even need this
+		if (num_expanded < 2) {
+			curr = fringe.pop();
+			System.out.println("num_exp = 1 (i.e. this is root), poll fringe anyway");
+		}
+		else if (fringe.peek() != null) {
+			System.out.println("fringe not null");
+			System.out.println("203");
+			curr = fringe.pop();
+		} 
+		else {//didn't find goal
+			//print things, goal not found, etc.
+			//something
+			//
+			System.out.println("goal not found");
+			System.out.println("210");
+			break;
+		}
+		System.out.println("nodes expanded: " + num_expanded);
+	}
+		
+		System.out.println("215");
+		//could do expanded.last or sth to be on the safe side but probs ok
+		//not working
+		System.out.println("output: path, expanded");
+		if (goal_found) {
+		printPath(curr);
+		}
+		else {
+			System.out.println("No solution found.");
+		}
+		printExp(expanded);
+		
+				
 	}
 
 	public static void solve_IDS() {
