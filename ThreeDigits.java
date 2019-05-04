@@ -1,7 +1,7 @@
-//Done: implemented DFS
-//ToDo: check DFS for errors, first submission, other algos
+//Done: implemented DFS, IDS, first submission
+//ToDo:other algos, pass students test cases
 
-package my_package_new;
+package eper8035;
 import java.io.*;
 import java.util.Scanner;
 import java.util.Stack;
@@ -15,6 +15,7 @@ import java.util.Queue;
  * @author elobe
  *
  */
+//account for exceptions in incorrect input (eg no input in file, wrong things, etc.)
 public class ThreeDigits {
 
 	public static final int MAX_EXPANDED = 1000;
@@ -163,50 +164,43 @@ public class ThreeDigits {
 		//fringe.add(root);
 		Node curr = root;
 		
-		System.out.println("164");
 		//make sure this is right constraint. <=?	
 		while (num_expanded < MAX_EXPANDED) {
-			String str = Arrays.toString(curr.getDigits());
-			System.out.println("Current is :" + str);
-			printList(fringe, 'f');
-			printList(expanded, 'e');
-			System.out.println("167");
+		
 		//check if goal
 		if (isGoal(curr)) {
 			//print things? or later
 			//save/make things for printing
-			System.out.println("goal found");
+			
 			goal_found = true;
-			expanded.add(curr);
-			System.out.println("175");
+			expanded.add(curr);			
 			num_expanded++;
 			break;
 		}
-		System.out.println("178");
 		//check if this node already expanded
 		for (Node otherNode : expanded) {
-			//System.out.println("181");
 			if (curr.equals(otherNode)) {
 				//delete 2 lines
 				String curr_str = Arrays.toString(curr.getDigits());
 				String other_str = Arrays.toString(otherNode.getDigits());
-				System.out.println("183");
 				//will delete from fringe, don't expand
 				//need to continue from OUTER loop!!
-				System.out.println("node already visited: " + curr_str + " is same as " + other_str);
 				curr.setVisited(true);
 			}				
 		}
-		System.out.println("189");
 		//if already visited, remove from fringe, 
 		//don't add to expanded and skip this iteration
 		if (curr.visited()) {
-			System.out.println("visited, so remove from fringe");
-			System.out.println("193");
-			curr = fringe.poll();
+			//exception
+			try {
+			curr = fringe.pop();
+			}
+			catch (Exception E) {
+				//stack is empty
+				break;
+			}
 			continue;
 		}
-		System.out.println("196");
 		//maybe should make expanded and children same data structure?
 		ArrayList<Node> ch = generateChildren(curr);
 		expanded.add(curr);
@@ -216,30 +210,18 @@ public class ThreeDigits {
 		fringe.addAll(ch);//adds to tail
 		}
 		//don't even need this
-		if (num_expanded < 2) {
-			curr = fringe.poll();
-			System.out.println("num_exp = 1 (i.e. this is root), poll fringe anyway");
-		}
-		else if (fringe.peek() != null) {
-			System.out.println("fringe not null");
-			System.out.println("203");
+		if (!fringe.isEmpty()) {
 			curr = fringe.poll();
 		} 
 		else {//didn't find goal
 			//print things, goal not found, etc.
 			//something
-			//
-			System.out.println("goal not found");
-			System.out.println("210");
 			break;
 		}
-		System.out.println("nodes expanded: " + num_expanded);
 	}
-		
-		System.out.println("215");
+
 		//could do expanded.last or sth to be on the safe side but probs ok
 		//not working
-		System.out.println("output: path, expanded");
 		if (goal_found) {
 		printPath(curr);
 		}
@@ -253,6 +235,11 @@ public class ThreeDigits {
 	
 
 
+	//^^^ BFS
+	//
+	//
+	//
+	//vvv DFS
 	
 	
 	
@@ -273,51 +260,43 @@ public class ThreeDigits {
 		goal_found = false;
 		Node curr = root;
 		
-		System.out.println("164");
 		//make sure this is right constraint. <=?	
 		while (num_expanded < MAX_EXPANDED) {
 			String str = Arrays.toString(curr.getDigits());
-			System.out.println("Current is :" + str);
 			//do later
 			//printList(fringe, 'f');
-			printList(expanded, 'e');
-			System.out.println("167");
+			//printList(expanded, 'e');
 		//check if goal
 		if (isGoal(curr)) {
 			//print things? or later
 			//save/make things for printing
-			System.out.println("goal found");
+			//System.out.println("goal found");
 			goal_found = true;
 			expanded.add(curr);
-			System.out.println("175");
 			num_expanded++;
 			break;
 		}
-		System.out.println("178");
 		//check if this node already expanded
 		for (Node otherNode : expanded) {
-			//System.out.println("181");
 			if (curr.equals(otherNode)) {
-				//delete 2 lines
-				String curr_str = Arrays.toString(curr.getDigits());
-				String other_str = Arrays.toString(otherNode.getDigits());
-				System.out.println("183");
 				//will delete from fringe, don't expand
-				//need to continue from OUTER loop!!
-				System.out.println("node already visited: " + curr_str + " is same as " + other_str);
+				//need to continue from OUTER loop
 				curr.setVisited(true);
 			}				
 		}
-		System.out.println("189");
 		//if already visited, remove from fringe, 
 		//don't add to expanded and skip this iteration
 		if (curr.visited()) {
-			System.out.println("visited, so remove from fringe");
-			System.out.println("193");
+			//exception
+			try {
 			curr = fringe.pop();
+			}
+			catch (Exception E) {
+				//stack is empty
+				break;
+			}
 			continue;
 		}
-		System.out.println("196");
 		//maybe should make expanded and children same data structure?
 		ArrayList<Node> ch = generateChildren(curr);
 		expanded.add(curr);
@@ -333,47 +312,185 @@ public class ThreeDigits {
 			}
 		}
 		//don't even need this
-		if (num_expanded < 2) {
-			curr = fringe.pop();
-			System.out.println("num_exp = 1 (i.e. this is root), poll fringe anyway");
-		}
-		else if (fringe.peek() != null) {
-			System.out.println("fringe not null");
-			System.out.println("203");
+		if (!fringe.isEmpty()) {
 			curr = fringe.pop();
 		} 
 		else {//didn't find goal
 			//print things, goal not found, etc.
 			//something
 			//
-			System.out.println("goal not found");
-			System.out.println("210");
 			break;
 		}
-		System.out.println("nodes expanded: " + num_expanded);
 	}
-		
-		System.out.println("215");
 		//could do expanded.last or sth to be on the safe side but probs ok
 		//not working
-		System.out.println("output: path, expanded");
 		if (goal_found) {
 		printPath(curr);
 		}
 		else {
 			System.out.println("No solution found.");
 		}
-		printExp(expanded);
-		
-				
+		printExp(expanded);				
 	}
+	
+	
+	
+	
+	//^^^ DFS
+	//
+	//
+	//
+	//vvv IDS	
+	
+	
+	
+	
 
 	public static void solve_IDS() {
-		while (num_expanded < MAX_EXPANDED) {
+		//gen plan
+		//this is just DFS at different depths:
+		//could loop through children and not add them to fringe if depth higher than d
+		//or have diff method for children
+		
+//		either
+//		if child.depth() > depth 
+//			then don't add 
+//		
+//		or 
+//		loop through already gen children 
+//		if child.depth() > depth 
+//			then don't add to fringe
+		
+		//START
+		LinkedList<Node> expanded = new LinkedList<Node> ();	
+		goal_found = false;
+		num_expanded = 0;
+
+		//iterate through depths until we find the goal 
+		for (int depth = 0; depth < 1001; depth++) {
+			expanded.addAll(sub_DLS(depth));
+			//actually can do all of the printing and stuff from there 
+			if (goal_found) {
+				break;
+			}
+		}		
+		
+		if (goal_found) {
+			printPath(expanded.getLast());
+			printExp(expanded);	
+		} else {
+			System.out.println("No path found.");
+			printExp(expanded);	
+		}
 			
+	}
+
+	
+	//^^^ IDS
+	//
+	//
+	//
+	//vvv DLS
+	
+	
+	
+	
+	public static LinkedList<Node> sub_DLS(int max_depth) {
+		Stack<Node> fringe = new Stack<Node> ();
+		LinkedList<Node> expanded = new LinkedList<Node>();
+		Node curr = root;
+		
+		//make sure this is right constraint. <=?	
+		while (num_expanded < MAX_EXPANDED) {
+			//String str = Arrays.toString(curr.getDigits());
+			//do later
+			//printList(fringe, 'f');
+			//printList(expanded, 'e');
+		//check if goal
+		if (isGoal(curr)) {
+			//print things? or later
+			//save/make things for printing
+			//System.out.println("goal found");
+			goal_found = true;
+			expanded.add(curr);
 			num_expanded++;
+			break;
+		}
+		//check if this node already expanded
+		for (Node otherNode : expanded) {
+			if (curr.equals(otherNode)) {
+				//will delete from fringe, don't expand
+				//need to continue from OUTER loop
+				curr.setVisited(true);
+			}				
+		}
+		//if already visited, remove from fringe, 
+		//don't add to expanded and skip this iteration
+		if (curr.visited()) {
+			//exception
+			try {
+			curr = fringe.pop();
+			}
+			catch (Exception E) {
+				//stack is empty
+				break;
+			}
+			continue;
+		}
+		//maybe should make expanded and children same data structure?
+		ArrayList<Node> ch = generateChildren(curr);
+		expanded.add(curr);
+		num_expanded++;
+		//add children to fringe
+		Stack<Node> reverse = new Stack<Node>();
+		if (!ch.isEmpty()) {
+			boolean omitted = false;
+			for (Node child : ch) {
+				if (child.getDepth() > max_depth) {
+				omitted = true;
+				}
+				else {
+					reverse.push(child);//adds to top of stack
+				}
+			}
+			for (int i = 0; i < ch.size(); i++) {
+				if (!omitted) {			
+				fringe.push(reverse.pop());//adds to top of stack
+				}
+			}
+		}
+		
+		if (!fringe.isEmpty()) {
+			//exception when we did if fringe.pop() != null
+			curr = fringe.pop();
+		} 
+		else {//didn't find goal
+			//print things, goal not found, etc.
+			//something
+			//
+			break;
 		}
 	}
+		//could do expanded.last or sth to be on the safe side but probs ok
+		//not working
+					
+		return expanded;
+	}
+	
+	
+	
+	
+	//^^^ DLS
+	//
+	//
+	//
+	//vvv GREEDY
+	
+	
+	
+	
+	
+	
 
 	public static void solve_Greedy() {
 		while (num_expanded < MAX_EXPANDED) {
@@ -418,7 +535,6 @@ public class ThreeDigits {
 					if (isForbidden(dig_temp)) {
 						//do nothing(?)
 						String a = Arrays.toString(dig_temp);
-						System.out.println("forbidden, not generating child: " + a);
 					} 
 					else {
 						Node child = new Node(node, dig_temp, x);
@@ -426,9 +542,7 @@ public class ThreeDigits {
 
 						//testing
 						for (int i = 0; i < 3; i++) {
-							System.out.println(dig_temp[i]);
 						}
-						System.out.println("");
 						//
 					}
 				}
@@ -439,7 +553,6 @@ public class ThreeDigits {
 					if (isForbidden(dig_temp)) {
 						//do nothing(?)
 						String a = Arrays.toString(dig_temp);
-						System.out.println("forbidden, not generating child: " + a);
 					} 
 					else {
 						Node child = new Node(node, dig_temp, x);
@@ -447,9 +560,7 @@ public class ThreeDigits {
 
 						//testing
 						for (int i = 0; i < 3; i++) {
-							System.out.println(dig_temp[i]);
 						}
-						System.out.println("");
 						//
 					}
 				} 			
@@ -539,22 +650,22 @@ public class ThreeDigits {
 	//for testing
 	public static void printList(LinkedList<Node> fringe, char ch) {
 		if (ch == 'f') {
-			System.out.print("fringe: ");
+			//System.out.print("fringe: ");
 		}
 		else {
-			System.out.print("expanded: ");
+			//System.out.print("expanded: ");
 		}
 		//case if goal not found?
 		
 		for (int i = 0; i < fringe.size(); i++) {
 			int[] digt = fringe.get(i).getDigits(); 
 			String digt_str = Arrays.toString(digt).replaceAll("\\[|\\]|,| |\\s", "");
-			System.out.print(digt_str);
+			//System.out.print(digt_str);
 			if (i < fringe.size() -1) {
-				System.out.print(",");
+			//	System.out.print(",");
 			}
 		}
-		System.out.println("");
+		//System.out.println("");
 	}
 	
 	
@@ -570,31 +681,4 @@ public class ThreeDigits {
 	//DFS is stack 
 	//
 
-//Note: How to generate and print children	
-//ArrayList<Node> children =  generateChildren(root);
-//ArrayList<Node> chil =  generateChildren(children.get(0));		
-//
-////want to print chil (test)
-//for (int i = 0; i < chil.size(); i++) {
-//	int[] digt = chil.get(i).getDigits(); 
-//	String chil_str = Arrays.toString(digt).replaceAll("\\[|\\]|,| |\\s", "");
-//	System.out.print(chil_str);
-//	if (i < chil.size() -1) {
-//	System.out.print(",");
-//	}
-//}
-
-////Alternative (better) method, with inbuilt functions: How to generate and print children	
-//generateChildren(root);
-//ArrayList<Node> chil =  generateChildren(root.getChildren().get(0));		
-//
-////want to print chil (test)
-//for (int i = 0; i < chil.size(); i++) {
-//int[] digt = chil.get(i).getDigits(); 
-//String chil_str = Arrays.toString(digt).replaceAll("\\[|\\]|,| |\\s", "");
-//System.out.print(chil_str);
-//if (i < chil.size() -1) {
-//System.out.print(",");
-//}
-//}
 	
