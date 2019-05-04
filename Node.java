@@ -1,5 +1,4 @@
-//Did: 
-//Todo: 
+//Did: getcost, implicit cost setter in constructor, implicit evaluation fctn setter in constr, getEval()
 
 package eper8035;
 import java.util.*;
@@ -17,26 +16,36 @@ public class Node {
 	//for 1st node (root) avoid this bit of code or set to -1 and catch exc
 	private int last_changed; 
 	private boolean visited;
+	private int heuristic;
+	private int order_added;
+	private int cost;
+	private int eval;
 	
-	
+	//constructor
 	//could try-catch nullpointer for root but seems clunky
 	//!!!make input arg be the int[], not string, and translate into int[] in main program 
-	public Node(Node parent, int[] digits, int last_changed) {
+	public Node(Node parent, int[] digits, int last_changed, int heuristic, int order) {
 		
 		this.digits = digits;
 		this.last_changed = last_changed;
-		visited = false;
+		this.heuristic = heuristic;
+		this.order_added = order;
+		this.visited = false;
 		//see if this works
 		//think: are there any other nodes w/ null parents 
 		//apart from root? (eg. disconnected)
 		if (parent == null) {
-			depth = 0;
+			this.depth = 0;
 			this.last_changed = -1;
+			this.cost = 0;
 		}
 		else {
-			depth = parent.getDepth() + 1;
+			this.depth = parent.getDepth() + 1;
 			this.parent = parent;
+			this.cost = parent.getCost() + 1;
 		}
+		
+		this.eval = this.cost + this.heuristic;
 		
 		//the idea is to not "arbitrarily" set depth when we create node, so not input arg
 		//but still having it as var so we don't have to traverse whole tree every time
@@ -83,6 +92,10 @@ public class Node {
 	
 	public ArrayList<Node> getChildren() {
 		return this.children;
+	}
+	
+	public int getEval() {
+		return eval;
 	}
 	
 	
@@ -136,6 +149,18 @@ public class Node {
 	
 	public boolean visited() {
 		return this.visited;
+	}
+	
+	public int getHeuristic(){
+		return this.heuristic;
+	}
+	
+	public int getOrder() {
+		return this.order_added;
+	}
+	
+	public int getCost() {
+		return this.cost;
 	}
 
 	//getPath() --> put in main progr
