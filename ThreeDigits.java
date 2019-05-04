@@ -1,5 +1,5 @@
-//Done: Implemented AStar
-//Hill Climbing, test thoroughly, pass students test cases
+//Done: Implemented AStar and hill climbing
+//test thoroughly, pass students test cases
 
 package eper8035;
 import java.io.*;
@@ -683,13 +683,102 @@ public class ThreeDigits {
 	
 	
 	
-
+	//Hill Climbing has no memory: No fringe
+	//could make a special generate children method that chooses the right child
+	
+	//Important: if we can't find closer node than current, FINISH
 	public static void solve_HillClimbing() {
-		
+		//what things to check for?
+		//num of nodes, whether any of them are in expanded, whether forbidden...
+		LinkedList<Node> expanded = new LinkedList<Node> ();
+		Comparator<Node> comparator = new AStarComparator();
+		PriorityQueue<Node> fringe;
+
+		num_expanded = 0;
+		goal_found = false;
+		Node curr = root;
+		order = 0;
+
+		//make sure this is right constraint. <=?	
+		while (num_expanded < MAX_EXPANDED) {
+			fringe = new PriorityQueue<Node> (10, comparator);
+//			//test//
+//			System.out.println("node heuristic is " + heuristic(curr.getDigits()));
+//			System.out.println("node order is " + curr.getOrder());
+//			System.out.println("Current node: " + Arrays.toString(curr.getDigits()));
+//			printPQ(fringe, 'f');
+//			printList(expanded, 'e');
+//			//
+
+			//check if goal
+			if (isGoal(curr)) {
+				//print things? or later
+				//save/make things for printing
+
+				goal_found = true;
+				expanded.add(curr);			
+				num_expanded++;
+				break;
+			}
+			//check if this node already expanded
+			for (Node otherNode : expanded) {
+				if (curr.equals(otherNode)) {
+					//will delete from fringe, don't expand
+					//need to continue from OUTER loop!!
+					curr.setVisited(true);
+				}				
+			}
+			//if already visited, remove from fringe, 
+			//don't add to expanded and skip this iteration
+			if (curr.visited()) {
+				//exception
+				try {
+					//this said pop. changed to poll()
+					curr = fringe.poll();
+				}
+				catch (Exception E) {
+					//stack is empty
+					break;
+				}
+				continue;
+			}
+			//maybe should make expanded and children same data structure?
+			ArrayList<Node> ch = generateChildren(curr);
+			expanded.add(curr);
+			num_expanded++;
+			//add children to fringe
+			if (!ch.isEmpty()) {
+				fringe.addAll(ch);//adds to tail
+			}
+			
+			
+			if (!fringe.isEmpty() && heuristic(fringe.peek().getDigits()) < heuristic(curr.getDigits())) {
+				curr = fringe.poll();
+			} 
+			else {//didn't find goal
+				//print things, goal not found, etc.
+				//something
+				break;
+			}
+		}
+
+		//could do expanded.last or sth to be on the safe side but probs ok
+		//not working
+		if (goal_found) {
+//			//testing//
+//			System.out.println("goal found");
+//			//
+			printPath(curr);
+		}
+		else {
+			System.out.println("No solution found.");
+		}
+		printExp(expanded);			
+
 	}
-	
-	
-	
+
+
+
 	
 	
 	
