@@ -1,7 +1,7 @@
 //Did: 
 //Todo: 
 
-package my_package_new;
+package eper8035;
 import java.util.*;
 
 public class Node {
@@ -27,12 +27,15 @@ public class Node {
 		this.last_changed = last_changed;
 		visited = false;
 		//see if this works
+		//think: are there any other nodes w/ null parents 
+		//apart from root? (eg. disconnected)
 		if (parent == null) {
 			depth = 0;
 			this.last_changed = -1;
 		}
 		else {
-		this.parent = parent;
+			depth = parent.getDepth() + 1;
+			this.parent = parent;
 		}
 		
 		//the idea is to not "arbitrarily" set depth when we create node, so not input arg
@@ -68,9 +71,6 @@ public class Node {
 
 	//static? -> not but maybe when we set it yes
 	public int getDepth() {
-		if (depth != 0) {
-			depth = parent.getDepth() + 1;
-		}
 		return depth;
 	}
 
