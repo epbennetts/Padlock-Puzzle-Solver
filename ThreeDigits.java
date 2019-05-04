@@ -1,14 +1,11 @@
-//Done: implemented DFS, IDS, first submission
+//Done: made heuristic(), changed generateChildren() to include heuristic, changed instances of pop in BFS to poll 
+//(happened bc of copy paste), implemented Greedy Search, tested lightly with print statements
 //ToDo:other algos, pass students test cases
 
 package eper8035;
 import java.io.*;
-import java.util.Scanner;
-import java.util.Stack;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
+import java.lang.Math;
 
 
 /**
@@ -31,8 +28,9 @@ public class ThreeDigits {
 	//private Queue<Node> fringe;//diff data structs for fringe dep on algo
 	private static int num_expanded;
 	private static boolean goal_found;
+	private static int order;
 	
-	private static TreeStruct tree;
+	//private static TreeStruct tree;
 	private static Node root;
 
 	public static void main(String[] args){
@@ -81,19 +79,18 @@ public class ThreeDigits {
 			exc.printStackTrace();
 		}	
 		
-		root = new Node(null, start, -1);
-		tree = new TreeStruct(root); //does nothing tbh
+		root = new Node(null, start, -1, heuristic(start), 0);
 		
 		
 		solve(alg);
-		
-		if (goal_found) {
-			//print things
-		}
-		else {
-			//print other things 
-			//or could print same and change what it prints in methods)
-		}
+//		
+//		if (goal_found) {
+//			//print things
+//		}
+//		else {
+//			//print other things 
+//			//or could print same and change what it prints in methods)
+//		}
 		
 		
 		
@@ -180,9 +177,6 @@ public class ThreeDigits {
 		//check if this node already expanded
 		for (Node otherNode : expanded) {
 			if (curr.equals(otherNode)) {
-				//delete 2 lines
-				String curr_str = Arrays.toString(curr.getDigits());
-				String other_str = Arrays.toString(otherNode.getDigits());
 				//will delete from fringe, don't expand
 				//need to continue from OUTER loop!!
 				curr.setVisited(true);
@@ -193,7 +187,8 @@ public class ThreeDigits {
 		if (curr.visited()) {
 			//exception
 			try {
-			curr = fringe.pop();
+				//this said pop. changed to poll()
+			curr = fringe.poll();
 			}
 			catch (Exception E) {
 				//stack is empty
@@ -262,7 +257,7 @@ public class ThreeDigits {
 		
 		//make sure this is right constraint. <=?	
 		while (num_expanded < MAX_EXPANDED) {
-			String str = Arrays.toString(curr.getDigits());
+			//String str = Arrays.toString(curr.getDigits());
 			//do later
 			//printList(fringe, 'f');
 			//printList(expanded, 'e');
@@ -485,25 +480,193 @@ public class ThreeDigits {
 	//
 	//
 	//vvv GREEDY
-	
-	
-	
-	
-	
+		
+
+
+
 	
 
 	public static void solve_Greedy() {
+		//what things to check for?
+		//num of nodes, whether any of them are in expanded, whether forbidden...
+		LinkedList<Node> expanded = new LinkedList<Node> ();
+		Comparator<Node> comparator = new GreedyComparator();
+		PriorityQueue<Node> fringe = new PriorityQueue<Node> (10, comparator);
+
+		num_expanded = 0;
+		goal_found = false;
+		Node curr = root;
+		order = 0;
+
+		//make sure this is right constraint. <=?	
 		while (num_expanded < MAX_EXPANDED) {
-			
+			//test//
+			System.out.println("node heuristic is " + heuristic(curr.getDigits()));
+			System.out.println("node order is " + curr.getOrder());
+			System.out.println("Current node: " + Arrays.toString(curr.getDigits()));
+			printPQ(fringe, 'f');
+			printList(expanded, 'e');
+			//
+
+			//check if goal
+			if (isGoal(curr)) {
+				//print things? or later
+				//save/make things for printing
+
+				goal_found = true;
+				expanded.add(curr);			
+				num_expanded++;
+				break;
+			}
+			//check if this node already expanded
+			for (Node otherNode : expanded) {
+				if (curr.equals(otherNode)) {
+					//will delete from fringe, don't expand
+					//need to continue from OUTER loop!!
+					curr.setVisited(true);
+				}				
+			}
+			//if already visited, remove from fringe, 
+			//don't add to expanded and skip this iteration
+			if (curr.visited()) {
+				//exception
+				try {
+					//this said pop. changed to poll()
+					curr = fringe.poll();
+				}
+				catch (Exception E) {
+					//stack is empty
+					break;
+				}
+				continue;
+			}
+			//maybe should make expanded and children same data structure?
+			ArrayList<Node> ch = generateChildren(curr);
+			expanded.add(curr);
 			num_expanded++;
+			//add children to fringe
+			if (!ch.isEmpty()) {
+				fringe.addAll(ch);//adds to tail
+			}
+			//don't even need this
+			if (!fringe.isEmpty()) {
+				curr = fringe.poll();
+			} 
+			else {//didn't find goal
+				//print things, goal not found, etc.
+				//something
+				break;
+			}
 		}
+
+		//could do expanded.last or sth to be on the safe side but probs ok
+		//not working
+		if (goal_found) {
+			//testing//
+			System.out.println("goal found");
+			//
+			printPath(curr);
+		}
+		else {
+			System.out.println("No solution found.");
+		}
+		printExp(expanded);		
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static void solve_AStar() {
-		while (num_expanded < MAX_EXPANDED) {
-			
-			num_expanded++;
-		}
+//		//what things to check for?
+//		//num of nodes, whether any of them are in expanded, whether forbidden...
+//		LinkedList<Node> expanded = new LinkedList<Node> ();
+//		Comparator<Node> comparator = new GreedyComparator();
+//		PriorityQueue<Node> fringe = new PriorityQueue<Node> (10, comparator);
+//
+//		num_expanded = 0;
+//		goal_found = false;
+//		Node curr = root;
+//		order = 0;
+//
+//		//make sure this is right constraint. <=?	
+//		while (num_expanded < MAX_EXPANDED) {
+//			//test//
+//			System.out.println("node heuristic is " + heuristic(curr.getDigits()));
+//			System.out.println("node order is " + curr.getOrder());
+//			System.out.println("Current node: " + Arrays.toString(curr.getDigits()));
+//			printPQ(fringe, 'f');
+//			printList(expanded, 'e');
+//			//
+//
+//			//check if goal
+//			if (isGoal(curr)) {
+//				//print things? or later
+//				//save/make things for printing
+//
+//				goal_found = true;
+//				expanded.add(curr);			
+//				num_expanded++;
+//				break;
+//			}
+//			//check if this node already expanded
+//			for (Node otherNode : expanded) {
+//				if (curr.equals(otherNode)) {
+//					//will delete from fringe, don't expand
+//					//need to continue from OUTER loop!!
+//					curr.setVisited(true);
+//				}				
+//			}
+//			//if already visited, remove from fringe, 
+//			//don't add to expanded and skip this iteration
+//			if (curr.visited()) {
+//				//exception
+//				try {
+//					//this said pop. changed to poll()
+//					curr = fringe.poll();
+//				}
+//				catch (Exception E) {
+//					//stack is empty
+//					break;
+//				}
+//				continue;
+//			}
+//			//maybe should make expanded and children same data structure?
+//			ArrayList<Node> ch = generateChildren(curr);
+//			expanded.add(curr);
+//			num_expanded++;
+//			//add children to fringe
+//			if (!ch.isEmpty()) {
+//				fringe.addAll(ch);//adds to tail
+//			}
+//			//don't even need this
+//			if (!fringe.isEmpty()) {
+//				curr = fringe.poll();
+//			} 
+//			else {//didn't find goal
+//				//print things, goal not found, etc.
+//				//something
+//				break;
+//			}
+//		}
+//
+//		//could do expanded.last or sth to be on the safe side but probs ok
+//		//not working
+//		if (goal_found) {
+//			//testing//
+//			System.out.println("goal found");
+//			//
+//			printPath(curr);
+//		}
+//		else {
+//			System.out.println("No solution found.");
+//		}
+//		printExp(expanded);	
 	}
 
 	public static void solve_HillClimbing() {
@@ -512,6 +675,20 @@ public class ThreeDigits {
 			num_expanded++;
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 
 	private static ArrayList<Node> generateChildren(Node node) {
@@ -524,7 +701,9 @@ public class ThreeDigits {
 		//consider making the children in the main program and having a .add() function -why again?
 		//issue: We're making an arraylist thing but we're not actually "assigning" children to Node
 		
-		//have to check if forbidden!
+		//test
+		System.out.println("generating children");
+		//
 		ArrayList<Node> children = new ArrayList<Node>();
 		int[] dig_temp = new int[3];
 		for (int x = 0; x < 3; x++) {
@@ -532,40 +711,48 @@ public class ThreeDigits {
 				dig_temp = digits.clone();
 				if (dig_temp[x] != 0) {
 					dig_temp[x] = dig_temp[x]-1;
+					//for testing
+					String a = Arrays.toString(dig_temp);
+					//
 					if (isForbidden(dig_temp)) {
 						//do nothing(?)
-						String a = Arrays.toString(dig_temp);
+						System.out.println(a + " is forbidden");
 					} 
 					else {
-						Node child = new Node(node, dig_temp, x);
+						order++;
+						Node child = new Node(node, dig_temp, x, heuristic(dig_temp), order);
 						children.add(child);
-
-						//testing
-						for (int i = 0; i < 3; i++) {
-						}
+						//testing//
+						System.out.println(child.getOrder() + a);
+						System.out.println("");
 						//
 					}
 				}
 				dig_temp = digits.clone();
 				if (dig_temp[x] != 9) {
 					dig_temp[x] = dig_temp[x]+1;
-					
+					//for testing
+					String a = Arrays.toString(dig_temp);
+					//
 					if (isForbidden(dig_temp)) {
 						//do nothing(?)
-						String a = Arrays.toString(dig_temp);
+						System.out.println(a+ " is forbidden");						
 					} 
 					else {
-						Node child = new Node(node, dig_temp, x);
+						order++;
+						Node child = new Node(node, dig_temp, x, heuristic(dig_temp), order);
 						children.add(child);
-
-						//testing
-						for (int i = 0; i < 3; i++) {
-						}
+						//testing//
+						System.out.println(child.getOrder() + a);
+						System.out.println("");
 						//
 					}
 				} 			
 			}
 		}
+		//test//
+		//System.out.println("end of children");
+		//
 		node.setChildren(children);
 		return children;		
 	}
@@ -650,24 +837,56 @@ public class ThreeDigits {
 	//for testing
 	public static void printList(LinkedList<Node> fringe, char ch) {
 		if (ch == 'f') {
-			//System.out.print("fringe: ");
+			System.out.print("fringe: ");
 		}
 		else {
-			//System.out.print("expanded: ");
+			System.out.print("expanded: ");
 		}
 		//case if goal not found?
 		
 		for (int i = 0; i < fringe.size(); i++) {
 			int[] digt = fringe.get(i).getDigits(); 
 			String digt_str = Arrays.toString(digt).replaceAll("\\[|\\]|,| |\\s", "");
-			//System.out.print(digt_str);
+			System.out.print(digt_str);
 			if (i < fringe.size() -1) {
-			//	System.out.print(",");
+				System.out.print(",");
 			}
 		}
-		//System.out.println("");
+		System.out.println("");
 	}
 	
+	
+	//for testing
+	public static void printPQ(PriorityQueue<Node> fringe, char ch) {
+		if (ch == 'f') {
+			System.out.print("fringe: ");
+		}
+		else {
+			System.out.print("expanded: ");
+		}
+		//case if goal not found?
+		
+		for (Node node : fringe) {
+			int[] digt = node.getDigits(); 
+			String digt_str = Arrays.toString(digt).replaceAll("\\[|\\]|,| |\\s", "");
+			System.out.print(digt_str);
+			System.out.print(",");
+		}
+		System.out.println("");
+	}
+	
+	
+	//better to return int or Integer? For ordering DS
+	public static int heuristic (int[] digits) {
+		Integer heuristic = 0;
+		
+		for (int i = 0; i < 3; i++) {
+			heuristic += Math.abs(digits[i]-goal[i]); 
+		}
+		int h = heuristic.intValue();
+		//node.setHeuristic(h);
+		return h; 
+	}
 	
 		
 }
