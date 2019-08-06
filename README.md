@@ -1,1 +1,1 @@
-# AI_assignment_1
+# 3-digit Padlock Puzzle Solver
